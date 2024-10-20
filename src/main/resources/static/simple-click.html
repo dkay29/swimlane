@@ -78,6 +78,32 @@
   cursor: pointer;
   border-radius: 4px;
 }
+            /* Faint grid lines */
+    .grid line {
+      stroke: lightgray;
+      stroke-opacity: 0.7;
+      shape-rendering: crispEdges;
+    }
+
+          /* Hide the axis line (the 'path' element) for both X and Y axes */
+  .x-axis path, .y-axis path {
+    display: none;
+  }
+   /* Styling for time adjustment controls */
+    #timeControls {
+      margin-bottom: 20px;
+    }
+
+    #timeControls button {
+      font-size: 18px;
+      padding: 5px 10px;
+      margin: 0 10px;
+    }
+
+    #currentHours {
+      font-size: 18px;
+    }
+
     </style>
 </head>
 <body>
@@ -94,6 +120,12 @@
         <input type="radio" name="theme" id="darkModeToggle" value="dark"> Dark Mode
     </label><br>
     <button id="closeSettings">Close</button>
+</div>
+<!-- Controls for adjusting time range -->
+<div id="timeControls">
+    <button id="decreaseHours">-</button>
+    <span id="currentHours">1</span> hour(s)
+    <button id="increaseHours">+</button>
 </div>
 
 <div id="swimlaneChart"></div>
@@ -134,6 +166,30 @@
     darkModeToggle.addEventListener('click', () => {
       applyTheme('dark');
     });
+    let currentHours = 1;  // Initial value of hours to display on the X-axis
+    const minHours = 1;
+    const maxHours = 14;
+   // Add event listeners to the buttons
+    document.getElementById('increaseHours').addEventListener('click', () => {
+      if (currentHours < maxHours) {
+        currentHours++;
+        updateHoursDisplay();
+        drawSwimlaneChart(currentHours);  // Redraw the chart with the updated number of hours
+      }
+    });
+
+    document.getElementById('decreaseHours').addEventListener('click', () => {
+      if (currentHours > minHours) {
+        currentHours--;
+        updateHoursDisplay();
+        drawSwimlaneChart(currentHours);  // Redraw the chart with the updated number of hours
+      }
+    });
+
+    // Update the displayed current hours
+    function updateHoursDisplay() {
+      document.getElementById('currentHours').textContent = currentHours;
+    }
 
     // Apply the selected theme
     function applyTheme(theme) {
