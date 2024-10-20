@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swimlane Chart with Clickable Metadata</title>
+    <style>
+        body {
+  font-family: Arial, sans-serif;
+  background-color: white;
+  color: black;
+}
+    #swimlaneChart {
+      width: 100%;
+      height: 50px;
+    }
+
+    #taskInfo {
+      position: absolute;
+      background: lightsteelblue;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+      width: 200px;
+      font-family: Arial, sans-serif;
+      font-size: 9px;
+    }
+      /* Light mode tooltip */
+  .light-mode #taskInfo {
+    background-color: lightGray;
+    color: black;
+    border: 1px solid gray;
+  }
+
+  /* Dark mode tooltip */
+  .dark-mode #taskInfo {
+    background-color: #303030;
+    color: white;
+    border: 1px solid #555;
+  }
+
+
+  #settingsScreen {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f0f0f0;
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+#darkModeToggle {
+  margin-top: 10px;
+}
+
+/* Dark mode styles */
+.dark-mode body {
+  background-color: #202020;
+  color: white;
+}
+
+.dark-mode #settingsScreen {
+  background: #333;
+  color: white;
+}
+
+#settingsButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #007BFF;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+    </style>
+</head>
+<body>
+<!-- Settings Button -->
+<button id="settingsButton">Settings</button>
+
+<!-- Settings Screen Modal -->
+<div id="settingsScreen">
+    <h3>Settings</h3>
+    <label>
+        <input type="radio" name="theme" id="lightModeToggle" value="light"> Light Mode
+    </label><br>
+    <label>
+        <input type="radio" name="theme" id="darkModeToggle" value="dark"> Dark Mode
+    </label><br>
+    <button id="closeSettings">Close</button>
+</div>
+
+<div id="swimlaneChart"></div>
+
+<!-- Tooltip div for showing task details -->
+<div id="taskInfo"></div>
+
+<!-- Include D3.js library -->
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="swimlane3.js"></script>
+<script>
+    // Initial setup
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsScreen = document.getElementById('settingsScreen');
+    const closeSettings = document.getElementById('closeSettings');
+    const lightModeToggle = document.getElementById('lightModeToggle');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    // Load mode from localStorage (if exists)
+    const currentMode = localStorage.getItem('theme') || 'light';
+    applyTheme(currentMode);
+
+    // Open settings modal
+    settingsButton.addEventListener('click', () => {
+      settingsScreen.style.display = 'block';
+    });
+
+    // Close settings modal
+    closeSettings.addEventListener('click', () => {
+      settingsScreen.style.display = 'none';
+    });
+
+    // Event listeners for theme toggling
+    lightModeToggle.addEventListener('click', () => {
+      applyTheme('light');
+    });
+
+    darkModeToggle.addEventListener('click', () => {
+      applyTheme('dark');
+    });
+
+    // Apply the selected theme
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+      } else {
+        document.documentElement.classList.remove('dark-mode');
+        lightModeToggle.checked = true;
+      }
+
+      // Store the theme in localStorage
+      localStorage.setItem('theme', theme);
+    }
+</script>
+</body>
+</html>

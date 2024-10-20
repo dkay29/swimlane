@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swimlane Chart with Settings</title>
+    <style>
+        /* Basic light mode styles */
+        body {
+          font-family: Arial, sans-serif;
+          background-color: white;
+          color: black;
+        }
+
+        #settingsScreen {
+          display: none; /* Hidden by default */
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #f0f0f0;
+          padding: 20px;
+          box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+        }
+
+        #darkModeToggle {
+          margin-top: 10px;
+        }
+
+        /* Dark mode styles */
+        .dark-mode body {
+          background-color: #121212;
+          color: white;
+        }
+
+        .dark-mode #settingsScreen {
+          background: #333;
+          color: white;
+        }
+
+        #settingsButton {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #007BFF;
+          color: white;
+          padding: 10px;
+          border: none;
+          cursor: pointer;
+          border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<!-- Settings Button -->
+<button id="settingsButton">Settings</button>
+
+<!-- Settings Screen Modal -->
+<div id="settingsScreen">
+    <h3>Settings</h3>
+    <label>
+        <input type="radio" name="theme" id="lightModeToggle" value="light"> Light Mode
+    </label><br>
+    <label>
+        <input type="radio" name="theme" id="darkModeToggle" value="dark"> Dark Mode
+    </label><br>
+    <button id="closeSettings">Close</button>
+</div>
+
+<!-- Swimlane Chart container -->
+<div id="swimlaneChart"></div>
+
+<script src="https://d3js.org/d3.v6.min.js"></script>
+
+<script>
+    // Initial setup
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsScreen = document.getElementById('settingsScreen');
+    const closeSettings = document.getElementById('closeSettings');
+    const lightModeToggle = document.getElementById('lightModeToggle');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    // Load mode from localStorage (if exists)
+    const currentMode = localStorage.getItem('theme') || 'light';
+    applyTheme(currentMode);
+
+    // Open settings modal
+    settingsButton.addEventListener('click', () => {
+      settingsScreen.style.display = 'block';
+    });
+
+    // Close settings modal
+    closeSettings.addEventListener('click', () => {
+      settingsScreen.style.display = 'none';
+    });
+
+    // Event listeners for theme toggling
+    lightModeToggle.addEventListener('click', () => {
+      applyTheme('light');
+    });
+
+    darkModeToggle.addEventListener('click', () => {
+      applyTheme('dark');
+    });
+
+    // Apply the selected theme
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+        darkModeToggle.checked = true;
+      } else {
+        document.documentElement.classList.remove('dark-mode');
+        lightModeToggle.checked = true;
+      }
+
+      // Store the theme in localStorage
+      localStorage.setItem('theme', theme);
+    }
+
+    // Draw the swimlane chart (dummy example, adjust as needed)
+    function drawSwimlaneChart() {
+      // Your D3.js code goes here
+      const svg = d3.select("#swimlaneChart")
+        .append("svg")
+        .attr("width", 800)
+        .attr("height", 400)
+        .style("background", currentMode === 'dark' ? '#333' : '#f0f0f0'); // Apply background based on mode
+    }
+
+    drawSwimlaneChart();
+</script>
+</body>
+</html>
