@@ -2,15 +2,23 @@ package com.dkay229.swimlane.model;
 
 import java.util.Date;
 
-public class SwimlaneTask {
+public class SwimlaneEvent {
     private String name;
     private String lane;
     private Date start;
     private Date end;
     private String color; // Add color attribute
+    Object[][] elapsedSecThresholdToColorMap = {
+            { 120, "darkblue"},
+            { 180, "green"},
+            { 300, "yellow"},
+            { 900, "brown"},
+            { 1800, "red"},
+            { 3600, "purple"},
+    };
 
     // Constructors
-    public SwimlaneTask(String name, String lane, Date start, Date end, String color) {
+    public SwimlaneEvent(String name, String lane, Date start, Date end, String color) {
         this.name = name;
         this.lane = lane;
         this.start = start;
@@ -31,8 +39,21 @@ public class SwimlaneTask {
     public Date getEnd() { return end; }
     public void setEnd(Date end) { this.end = end; }
 
-    public String getColor() { return color; }
+    public String getColor() {
+        String color="black";
+        for (int i=elapsedSecThresholdToColorMap.length-1;i>0;i--) {
+            color=(String)elapsedSecThresholdToColorMap[i][1];
+            if (getElapsedSecs()>(Integer)(elapsedSecThresholdToColorMap[i][0])) {
+                break;
+            }
+        }
+        return color;
+    }
     public void setColor(String color) { this.color = color; }
+
+    public int getElapsedSecs() {
+        return (int)((end.getTime()-start.getTime())/1000L);
+    }
 
     @Override
     public String toString() {
@@ -41,7 +62,8 @@ public class SwimlaneTask {
                 ", lane='" + lane + '\'' +
                 ", start=" + start +
                 ", end=" + end +
-                ", color='" + color + '\'' +
+                ", secs="+getElapsedSecs()+
+                ", color='" + getColor() + '\'' +
                 '}';
     }
 }

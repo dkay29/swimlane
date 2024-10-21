@@ -1,6 +1,6 @@
 package com.dkay229.swimlane.controller;
 
-import com.dkay229.swimlane.model.SwimlaneTask;
+import com.dkay229.swimlane.model.SwimlaneEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class SwimlaneController {
 
     static int[] distConcurrentReqs = {1, 1, 1, 3, 3,  4, 1, 11, 1, 1, 8};
     static int[] distTimeBetweenReqs = {1, 2, 4, 5, 5, 9, 14, 6, 9, 6, 2};
-    static int[] distQuerySecs = {1, 2, 3, 5, 2, 3, 30, 40, 40, 40, 40, 139, 234, 123, 433, 633, 34, 6, 8, 9, 34, 65, 23};
+    static int[] distQuerySecs = {0,0,0,1, 2, 3, 5,5656 ,1700, 1000, 3, 30, 40, 40, 40, 40, 139,34,842, 234, 123, 433, 633, 34, 6, 4,5,34,64,64,64,64,64,64,64,9, 34, 65, 23};
 
     private int drawFromDist(int[] d) {
         int l=d.length;
@@ -50,8 +50,7 @@ public class SwimlaneController {
     }
 
     private int querySecs() {
-        int secs=drawFromDist(distQuerySecs);
-        logger.info("Query secs "+secs);
+        int secs=drawFromDist(distQuerySecs)+randomBetween(2,200);
         return secs;
     }
 
@@ -64,49 +63,49 @@ public class SwimlaneController {
 
 
     @GetMapping("/wholeDay")
-    public List<SwimlaneTask> getWholeDay() {
-        List<SwimlaneTask> swimlaneTasks = new ArrayList<>();
+    public List<SwimlaneEvent> getWholeDay() {
+        List<SwimlaneEvent> swimlaneEvents = new ArrayList<>();
         Date t0 = new Date(2024, 9, 1, 0, 0);
         Date t1 = new Date(2024, 9, 1, 12, 15);
         Date t = t0;
-        List<SwimlaneTask> laneTails = new ArrayList<>();
+        List<SwimlaneEvent> laneTails = new ArrayList<>();
         AtomicInteger taskNumber = new AtomicInteger();
         while (t.before(t1)) {
             int minsBetween=minsReqWait();
             t = add(t, secsReqWait());
-            List<SwimlaneTask> batch = new ArrayList<>();
+            List<SwimlaneEvent> batch = new ArrayList<>();
             int reqsInBatch = numConcurrent();
             for (int i = 0; i < reqsInBatch; i++) {
-                SwimlaneTask swimlaneTask = new SwimlaneTask("Task " + taskNumber.incrementAndGet(), null, t, add(t, querySecs()*2), "green");
-                swimlaneTasks.add(swimlaneTask);
+                SwimlaneEvent swimlaneEvent = new SwimlaneEvent("Task " + taskNumber.incrementAndGet(), null, t, add(t, querySecs()), "green");
+                swimlaneEvents.add(swimlaneEvent);
                 for (int laneNum = 0; laneNum < laneTails.size(); laneNum++) {
-                    if (laneTails.get(laneNum).getEnd().before(swimlaneTask.getStart())) {
-                        swimlaneTask.setLane("" + (laneNum + 1));
-                        laneTails.set(laneNum, swimlaneTask);
+                    if (laneTails.get(laneNum).getEnd().before(swimlaneEvent.getStart())) {
+                        swimlaneEvent.setLane("" + (laneNum + 1));
+                        laneTails.set(laneNum, swimlaneEvent);
                         break;
                     }
                 }
-                if (swimlaneTask.getLane() == null) {
-                    swimlaneTask.setLane("" + (laneTails.size() + 1));
-                    laneTails.add(swimlaneTask);
+                if (swimlaneEvent.getLane() == null) {
+                    swimlaneEvent.setLane("" + (laneTails.size() + 1));
+                    laneTails.add(swimlaneEvent);
                 }
-                logger.info(swimlaneTask.toString());
             }
         }
-        return swimlaneTasks;
+        logger.info("Returning "+swimlaneEvents.size()+" events");
+        return swimlaneEvents;
     }
 
     @GetMapping("/swimlaneData")
-    public List<SwimlaneTask> getSwimlaneData() {
+    public List<SwimlaneEvent> getSwimlaneData() {
         // Mocked data for swimlane tasks
         logger.info("swimlaneData");
-        List<SwimlaneTask> swimlaneTasks = new ArrayList<>();
-        swimlaneTasks.add(new SwimlaneTask("Task A", "Team 1", new Date(2024, 9, 1, 10, 0), new Date(2024, 9, 1, 10, 30), nextColor()));
-        swimlaneTasks.add(new SwimlaneTask("Task B", "Team 1", new Date(2024, 9, 1, 10, 45), new Date(2024, 9, 1, 11, 15), nextColor()));
-        swimlaneTasks.add(new SwimlaneTask("Task C", "Team 2", new Date(2024, 9, 1, 10, 10), new Date(2024, 9, 1, 11, 0), nextColor()));
-        swimlaneTasks.add(new SwimlaneTask("Task D", "Team 2", new Date(2024, 9, 1, 11, 5), new Date(2024, 9, 1, 11, 45), nextColor()));
-        swimlaneTasks.add(new SwimlaneTask("Task E", "Team 3", new Date(2024, 9, 1, 10, 20), new Date(2024, 9, 1, 11, 10), nextColor()));
+        List<SwimlaneEvent> swimlaneEvents = new ArrayList<>();
+        swimlaneEvents.add(new SwimlaneEvent("Task A", "Team 1", new Date(2024, 9, 1, 10, 0), new Date(2024, 9, 1, 10, 30), nextColor()));
+        swimlaneEvents.add(new SwimlaneEvent("Task B", "Team 1", new Date(2024, 9, 1, 10, 45), new Date(2024, 9, 1, 11, 15), nextColor()));
+        swimlaneEvents.add(new SwimlaneEvent("Task C", "Team 2", new Date(2024, 9, 1, 10, 10), new Date(2024, 9, 1, 11, 0), nextColor()));
+        swimlaneEvents.add(new SwimlaneEvent("Task D", "Team 2", new Date(2024, 9, 1, 11, 5), new Date(2024, 9, 1, 11, 45), nextColor()));
+        swimlaneEvents.add(new SwimlaneEvent("Task E", "Team 3", new Date(2024, 9, 1, 10, 20), new Date(2024, 9, 1, 11, 10), nextColor()));
 
-        return swimlaneTasks;
+        return swimlaneEvents;
     }
 }

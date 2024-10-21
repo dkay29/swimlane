@@ -105,7 +105,10 @@ function drawSwimlaneChart(swimlaneData) {
             .html(`<strong>${d.name}</strong><br/>
                   Lane: ${d.lane}<br/>
                   Start: ${d.start.getHours()}:${d.start.getMinutes()}<br/>
-                  End: ${d.end.getHours()}:${d.end.getMinutes()}`);
+                  End: ${d.end.getHours()}:${d.end.getMinutes()}<br>
+                  Elapsed Secs: ${d.elapsedSecs}<br>
+                  Color: ${d.color}<br>
+                  `);
     });
 
 
